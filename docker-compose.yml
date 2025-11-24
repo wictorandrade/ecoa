@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine3.20
+    environment:
+      POSTGRES_DB: ecoa-db
+      POSTGRES_USER: ecoa
+      POSTGRES_PASSWORD: ecoa123
+      PGDATA: /data/postgres
+    ports:
+      - '11111:5432'
+    volumes:
+      - postgres-data:/data/postgres
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
