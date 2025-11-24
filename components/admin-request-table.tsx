@@ -3,21 +3,20 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
 import { Calendar, MapPin, UserIcon, Eye } from "lucide-react"
+import { Prisma } from "@/lib/prisma/client"
 
-interface ServiceRequest {
-  id: string
-  title: string
-  category: string
-  address: string
-  status: string
-  priority: string
-  created_at: string
-  user_id: string
-  profiles?: {
-    full_name: string
-    email: string
-  }
-}
+export type AdminServiceRequest = Prisma.ServiceRequestGetPayload<{
+    include: {
+        user: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+            };
+        };
+    };
+}>;
+
 
 const categoryLabels: Record<string, string> = {
   iluminacao: "Iluminação",
@@ -58,7 +57,7 @@ const priorityLabels: Record<string, string> = {
   urgente: "Urgente",
 }
 
-export function AdminRequestTable({ requests }: { requests: ServiceRequest[] }) {
+export function AdminRequestTable({ requests }: { requests: AdminServiceRequest[] }) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -81,7 +80,7 @@ export function AdminRequestTable({ requests }: { requests: ServiceRequest[] }) 
                   <p className="truncate">{request.title}</p>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" />
-                    <span className="truncate">{request.address}</span>
+                    <span className="truncate">{request.location}</span>
                   </div>
                 </div>
               </TableCell>
@@ -92,7 +91,7 @@ export function AdminRequestTable({ requests }: { requests: ServiceRequest[] }) 
                 <div className="flex items-center gap-1 text-sm">
                   <UserIcon className="h-3 w-3 text-muted-foreground" />
                   <span className="truncate max-w-[150px]">
-                    {request.profiles?.full_name || request.profiles?.email || "Usuário"}
+                    {request.user?.name || request.user?.email || "Usuário"}
                   </span>
                 </div>
               </TableCell>
@@ -105,7 +104,7 @@ export function AdminRequestTable({ requests }: { requests: ServiceRequest[] }) 
               <TableCell>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Calendar className="h-3 w-3" />
-                  {new Date(request.created_at).toLocaleDateString("pt-BR")}
+                  {new Date(request.createdAt).toLocaleDateString("pt-BR")}
                 </div>
               </TableCell>
               <TableCell className="text-right">
