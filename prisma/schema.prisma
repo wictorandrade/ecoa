@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEON_DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  requests      ServiceRequest[]
+  responses     RequestResponse[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model ServiceRequest {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  category    RequestCategory
+  status      RequestStatus   @default(PENDING)
+  priority    Priority        @default(MEDIUM)
+  location    String?
+  userId      String          @map("user_id")
+  assignedTo  String?         @map("assigned_to")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  responses     RequestResponse[]
+  notifications Notification[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@map("service_requests")
+}
+
+model RequestResponse {
+  id        String   @id @default(cuid())
+  requestId String   @map("request_id")
+  userId    String   @map("user_id")
+  message   String
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  user    User           @relation(fields: [userId], references: [id])
+
+  @@index([requestId])
+  @@map("request_responses")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  requestId String   @map("request_id")
+  title     String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RequestCategory {
+  ILUMINACAO
+  PAVIMENTACAO
+  COLETA_LIXO
+  LIMPEZA
+  SINALIZACAO
+  TRANSPORTE
+  OUTROS
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
