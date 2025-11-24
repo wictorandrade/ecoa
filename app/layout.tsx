@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SessionProvider } from "@/components/session-provider"
 import "./globals.css"
+import Head from "next/head"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -38,6 +39,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Ecoa" />
+        </head>
       <body className={`font-sans antialiased`}>
         <SessionProvider>{children}</SessionProvider>
         <Analytics />
