@@ -2,17 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, AlertCircle } from "lucide-react"
 import Link from "next/link"
-
-interface ServiceRequest {
-  id: string
-  title: string
-  description: string
-  category: string
-  address: string
-  status: string
-  priority: string
-  created_at: string
-}
+import { ServiceRequest } from "@/lib/prisma/client"
 
 const categoryLabels: Record<string, string> = {
   iluminacao: "Iluminação",
@@ -75,11 +65,11 @@ export function RequestCard({ request }: { request: ServiceRequest }) {
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              <span className="line-clamp-1">{request.address}</span>
+              <span className="line-clamp-1">{request.location}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>{new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
+              <span>{new Date(request.createdAt).toLocaleDateString("pt-BR")}</span>
             </div>
           </div>
         </CardContent>
