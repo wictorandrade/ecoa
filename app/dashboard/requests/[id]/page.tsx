@@ -1,15 +1,15 @@
-import { redirect, notFound } from "next/navigation"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Calendar, MapPin, AlertCircle, MessageSquare } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { redirect, notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Calendar, MapPin, AlertCircle, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const categoryLabels: Record<string, string> = {
   ILUMINACAO: "Iluminação",
@@ -19,46 +19,47 @@ const categoryLabels: Record<string, string> = {
   SINALIZACAO: "Sinalização",
   TRANSPORTE: "Transporte",
   OUTROS: "Outros",
-}
+};
 
 const statusLabels: Record<string, string> = {
   PENDING: "Pendente",
   IN_PROGRESS: "Em Andamento",
   RESOLVED: "Resolvido",
   REJECTED: "Rejeitado",
-}
+};
 
 const statusColors: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  PENDING:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
   IN_PROGRESS: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   RESOLVED: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   REJECTED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-}
+};
 
 const priorityLabels: Record<string, string> = {
   LOW: "Baixa",
   MEDIUM: "Média",
   HIGH: "Alta",
   URGENT: "Urgente",
-}
+};
 
 const priorityColors: Record<string, string> = {
   LOW: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
   MEDIUM: "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200",
   HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-200",
   URGENT: "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200",
-}
+};
 
 export default async function RequestDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
-  const session = await getServerSession(authOptions)
+  const { id } = await params;
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect("/login")
+    redirect("/login");
   }
 
   const request = await prisma.serviceRequest.findFirst({
@@ -82,10 +83,10 @@ export default async function RequestDetailPage({
         },
       },
     },
-  })
+  });
 
   if (!request) {
-    notFound()
+    notFound();
   }
 
   const unreadNotifications = await prisma.notification.count({
@@ -93,7 +94,7 @@ export default async function RequestDetailPage({
       userId: session.user.id,
       isRead: false,
     },
-  })
+  });
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -102,7 +103,7 @@ export default async function RequestDetailPage({
         userName={session.user.name || undefined}
         unreadCount={unreadNotifications}
       />
-      <main className="container py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-6">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard">
@@ -118,7 +119,9 @@ export default async function RequestDetailPage({
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <CardTitle className="text-2xl">{request.title}</CardTitle>
-                  <Badge className={statusColors[request.status]}>{statusLabels[request.status]}</Badge>
+                  <Badge className={statusColors[request.status]}>
+                    {statusLabels[request.status]}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -132,7 +135,9 @@ export default async function RequestDetailPage({
                     <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Localização</p>
-                      <p className="text-sm text-muted-foreground">{request.location || "Não especificado"}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {request.location || "Não especificado"}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
@@ -140,11 +145,14 @@ export default async function RequestDetailPage({
                     <div>
                       <p className="text-sm font-medium">Data de Criação</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(request.createdAt).toLocaleDateString("pt-BR", {
-                          day: "2-digit",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                        {new Date(request.createdAt).toLocaleDateString(
+                          "pt-BR",
+                          {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          }
+                        )}
                       </p>
                     </div>
                   </div>
@@ -162,14 +170,23 @@ export default async function RequestDetailPage({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {request.responses.map((response) => (
-                    <div key={response.id} className="rounded-lg border bg-muted/50 p-4">
+                    <div
+                      key={response.id}
+                      className="rounded-lg border bg-muted/50 p-4"
+                    >
                       <div className="mb-2 flex items-center justify-between">
-                        <p className="text-sm font-medium">{response.user.name || "Administrador"}</p>
+                        <p className="text-sm font-medium">
+                          {response.user.name || "Administrador"}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(response.createdAt).toLocaleDateString("pt-BR")}
+                          {new Date(response.createdAt).toLocaleDateString(
+                            "pt-BR"
+                          )}
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{response.message}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {response.message}
+                      </p>
                     </div>
                   ))}
                 </CardContent>
@@ -214,5 +231,5 @@ export default async function RequestDetailPage({
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -1,35 +1,41 @@
-import { redirect } from "next/navigation"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { AdminHeader } from "@/components/admin-header"
-import { AdminRequestTable } from "@/components/admin-request-table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { FileText, Clock, AlertTriangle, CheckCircle2, Users } from "lucide-react"
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { AdminHeader } from "@/components/admin-header";
+import { AdminRequestTable } from "@/components/admin-request-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  FileText,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  Users,
+} from "lucide-react";
 
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; status?: string }>
+  searchParams: Promise<{ search?: string; status?: string }>;
 }) {
-  const params = await searchParams
-  const session = await getServerSession(authOptions)
+  const params = await searchParams;
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect("/login")
+    redirect("/login");
   }
 
   if (session.user.role !== "ADMIN") {
-    redirect("/dashboard")
+    redirect("/dashboard");
   }
 
   // Build query based on filters
-  const where: any = {}
+  const where: any = {};
 
   if (params.status && params.status !== "all") {
-    where.status = params.status.toUpperCase()
+    where.status = params.status.toUpperCase();
   }
 
   if (params.search) {
@@ -37,7 +43,7 @@ export default async function AdminPage({
       { title: { contains: params.search, mode: "insensitive" } },
       { description: { contains: params.search, mode: "insensitive" } },
       { location: { contains: params.search, mode: "insensitive" } },
-    ]
+    ];
   }
 
   const requests = await prisma.serviceRequest.findMany({
@@ -54,31 +60,36 @@ export default async function AdminPage({
     orderBy: {
       createdAt: "desc",
     },
-  })
+  });
 
   const allRequests = await prisma.serviceRequest.findMany({
     select: {
       id: true,
       status: true,
     },
-  })
+  });
 
   const stats = {
     total: allRequests.length,
     pending: allRequests.filter((r) => r.status === "PENDING").length,
     inProgress: allRequests.filter((r) => r.status === "IN_PROGRESS").length,
     resolved: allRequests.filter((r) => r.status === "RESOLVED").length,
-  }
+  };
 
-  const usersCount = await prisma.user.count()
+  const usersCount = await prisma.user.count();
 
   return (
     <div className="min-h-screen bg-muted/50">
-      <AdminHeader userEmail={session.user.email} userName={session.user.name || undefined} />
-      <main className="container py-8">
+      <AdminHeader
+        userEmail={session.user.email}
+        userName={session.user.name || undefined}
+      />
+      <main className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold">Painel Administrativo</h2>
-          <p className="text-muted-foreground">Gerencie todas as solicitações de serviços do sistema</p>
+          <p className="text-muted-foreground">
+            Gerencie todas as solicitações de serviços do sistema
+          </p>
         </div>
 
         {/* Stats Cards */}
@@ -105,7 +116,9 @@ export default async function AdminPage({
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Em Progresso</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Em Progresso
+              </CardTitle>
               <AlertTriangle className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
@@ -142,7 +155,11 @@ export default async function AdminPage({
               <CardTitle>Solicitações</CardTitle>
               <div className="w-full md:w-72">
                 <form action="/admin" method="get">
-                  <Input name="search" placeholder="Buscar solicitações..." defaultValue={params.search} />
+                  <Input
+                    name="search"
+                    placeholder="Buscar solicitações..."
+                    defaultValue={params.search}
+                  />
                 </form>
               </div>
             </div>
@@ -169,7 +186,9 @@ export default async function AdminPage({
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12">
                     <FileText className="mb-4 h-12 w-12 text-muted-foreground" />
-                    <h3 className="mb-2 text-lg font-semibold">Nenhuma solicitação encontrada</h3>
+                    <h3 className="mb-2 text-lg font-semibold">
+                      Nenhuma solicitação encontrada
+                    </h3>
                     <p className="text-center text-sm text-muted-foreground">
                       Não há solicitações que correspondam aos filtros atuais
                     </p>
@@ -181,5 +200,5 @@ export default async function AdminPage({
         </Card>
       </main>
     </div>
-  )
+  );
 }

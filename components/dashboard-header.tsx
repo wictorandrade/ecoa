@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { signOut } from "next-auth/react"
-import { Button } from "@/components/ui/button"
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,29 +9,33 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Bell, LogOut, User } from "lucide-react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+} from "@/components/ui/dropdown-menu";
+import { Bell, LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface DashboardHeaderProps {
-  userEmail: string
-  userName?: string
-  unreadCount?: number
+  userEmail: string;
+  userName?: string;
+  unreadCount?: number;
 }
 
-export function DashboardHeader({ userEmail, userName, unreadCount = 0 }: DashboardHeaderProps) {
-  const router = useRouter()
+export function DashboardHeader({
+  userEmail,
+  userName,
+  unreadCount = 0,
+}: DashboardHeaderProps) {
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    router.push("/")
-    router.refresh()
-  }
+    await signOut({ redirect: false });
+    router.push("/");
+    router.refresh();
+  };
 
   return (
-    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">ECOA</h1>
           <span className="text-sm text-muted-foreground">Dashboard</span>
@@ -57,7 +61,9 @@ export function DashboardHeader({ userEmail, userName, unreadCount = 0 }: Dashbo
               <DropdownMenuLabel>
                 <div className="flex flex-col">
                   <span className="font-medium">{userName || "Usuário"}</span>
-                  <span className="text-xs text-muted-foreground">{userEmail}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {userEmail}
+                  </span>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -70,5 +76,5 @@ export function DashboardHeader({ userEmail, userName, unreadCount = 0 }: Dashbo
         </div>
       </div>
     </header>
-  )
+  );
 }
