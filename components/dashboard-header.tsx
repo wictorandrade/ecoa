@@ -13,6 +13,7 @@ import {
 import { Bell, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 interface DashboardHeaderProps {
   userEmail: string;
@@ -37,6 +38,7 @@ export function DashboardHeader({
     <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-2">
+          <Image src="/logo.svg" alt="Logo" width={14} height={14} />
           <h1 className="text-2xl font-bold">ECOA</h1>
           <span className="text-sm text-muted-foreground">Dashboard</span>
         </div>

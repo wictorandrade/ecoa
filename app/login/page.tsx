@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -56,11 +57,20 @@ export default function LoginPage() {
     <div className="mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 p-6">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-foreground">ECOA</h1>
-          <p className="mt-2 text-muted-foreground">
-            Sistema de Solicitações de Serviços Urbanos
-          </p>
-        </div>
+  <div className="flex flex-col items-center gap-2">
+    <Image
+      src="/logo.svg"
+      alt="Logo"
+      width={40}
+      height={40}
+    />
+    <h1 className="text-4xl font-bold text-foreground">ECOA</h1>
+  </div>
+
+  <p className="mt-2 text-muted-foreground">
+    Sistema de Solicitações de Serviços Urbanos
+  </p>
+</div>
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Entrar</CardTitle>
